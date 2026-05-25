@@ -1,13 +1,28 @@
-﻿namespace TreeVisualizer.Domain.Interfaces;
+using TreeVisualizer.Domain.Enums;
+using TreeVisualizer.Domain.Visualization;
 
+namespace TreeVisualizer.Domain.Interfaces;
+
+/// <summary>
+/// Базовый интерфейс дерева, с которым работает визуализатор.
+/// </summary>
 public interface ITree
 {
-    ITreeNode? Root { get; set; }
-    int Count { get; }
-    
-    void Insert(int key);
-    void Delete(int key);
-    ITreeNode? Find(int key);
-    IEnumerable<int> Traverse(Domain.Enums.TraversalType type);
+    string Name { get; }
+
+    TreeType Type { get; }
+
+    bool IsEmpty { get; }
+
     void Clear();
+
+    bool Contains(int key);
+
+    IReadOnlyList<TreeOperationStep> Insert(int key);
+
+    IReadOnlyList<TreeOperationStep> Delete(int key);
+
+    IReadOnlyList<TreeOperationStep> Search(int key);
+
+    TreeSnapshot CreateSnapshot();
 }

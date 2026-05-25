@@ -1,59 +1,62 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using System.ComponentModel;
+using TreeVisualizer.Domain;
+using System.Runtime.CompilerServices;
+using TreeVisualizer.Domain.Enums;
 using TreeVisualizer.Domain.Interfaces;
-using TreeVisualizer.Domain.Visualization;
 using TreeVisualizer.Infrastructure.Factories;
-using TreeVisualizer.Infrastructure.Layout;
 
 namespace TreeVisualizer.App.ViewModels;
 
-public partial class MainViewModel : ObservableObject
+public sealed class MainViewModel : INotifyPropertyChanged
 {
-    private readonly ITreeLayoutService _layoutService;
-    private readonly TreeFactory _treeFactory;
+    private ITree _currentTree;
+    private string _status = "Выбран тип дерева: простое бинарное дерево.";
 
-    [ObservableProperty] private IReadOnlyList<VisualNode> _visualNodes = Array.Empty<VisualNode>();
-    [ObservableProperty] private int _inputValue = 0;
-    [ObservableProperty] private string _statusMessage = "Готово к работе";
-
-    public ITree CurrentTree { get; private set; }
-
-    public MainViewModel(ITreeLayoutService layoutService, TreeFactory treeFactory)
+    public MainViewModel()
     {
-        _layoutService = layoutService;
-        _treeFactory = treeFactory;
-        CurrentTree = _treeFactory.CreateTree("BST");
-        RefreshLayout();
+        TreeTypes = new List<TreeTypeViewModel>
+        {
+            new(TreeType.BinarySearchTree, "Простое бинарное дерево"),
+            new(TreeType.AvlTree, "Сбалансированное AVL-дерево"),
+            new(TreeType.BTree, "B-дерево")
+        };
+
+        SelectedTreeType = TreeTypes[0];
+        _currentTree = TreeFactory.Create(SelectedTreeType.Type);
     }
 
-    [RelayCommand] private void InsertNode()
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public IReadOnlyList<TreeTypeViewModel> TreeTypes { get; }
+
+    public TreeTypeViewModel SelectedTreeType { get; private set; }
+
+    public ITree CurrentTree => _currentTree;
+
+    public string Status
     {
-        if (InputValue == 0) return;
-        CurrentTree.Insert(InputValue);
-        RefreshLayout();
-        StatusMessage = $"Вставлен: {InputValue}";
-        InputValue = 0;
+        get => _status;
+        set
+        {
+            if (_status == value)
+                return;
+
+            _status = value;
+            OnPropertyChanged();
+        }
     }
 
-    [RelayCommand] private void DeleteNode()
+    public void SelectTree(TreeTypeViewModel treeType)
     {
-        if (InputValue == 0) return;
-        CurrentTree.Delete(InputValue);
-        RefreshLayout();
-        StatusMessage = $"Удалён: {InputValue}";
-        InputValue = 0;
+        SelectedTreeType = treeType;
+        _currentTree = TreeFactory.Create(treeType.Type);
+        Status = $"Выбран тип дерева: {treeType.Title}.";
+        OnPropertyChanged(nameof(CurrentTree));
+        OnPropertyChanged(nameof(SelectedTreeType));
     }
 
-    [RelayCommand] private void ClearTree()
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        CurrentTree.Clear();
-        RefreshLayout();
-        StatusMessage = "Дерево очищено";
-    }
-
-    private void RefreshLayout()
-    {
-        var settings = new LayoutSettings();
-        VisualNodes = _layoutService.CalculateLayout(CurrentTree.Root, settings);
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

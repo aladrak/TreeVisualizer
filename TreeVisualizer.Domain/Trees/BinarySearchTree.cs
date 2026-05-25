@@ -1,78 +1,246 @@
-﻿using TreeVisualizer.Domain.Enums;
+using TreeVisualizer.Domain.Enums;
 using TreeVisualizer.Domain.Interfaces;
 using TreeVisualizer.Domain.Nodes;
+using TreeVisualizer.Domain.Visualization;
 
 namespace TreeVisualizer.Domain.Trees;
 
-public class BinarySearchTree : TreeBase
+/// <summary>
+/// Простое бинарное дерево поиска.
+/// </summary>
+public sealed class BinarySearchTree : ITree
 {
-    public override void Insert(int key)
+    private const double HorizontalStep = 90;
+    private const double VerticalStep = 95;
+    private const double NodeRadius = 34;
+
+    private BinaryTreeNode? _root;
+
+    public string Name => "Простое бинарное дерево";
+
+    public TreeType Type => TreeType.BinarySearchTree;
+
+    public bool IsEmpty => _root is null;
+
+    public void Clear()
     {
-        if (Root == null) Root = new BinaryTreeNode(key);
-        else InsertRecursive((BinaryTreeNode)Root!, key);
-        Count++;
+        _root = null;
     }
 
-    private void InsertRecursive(BinaryTreeNode node, int key)
+    public bool Contains(int key)
     {
-        if (key < node.Key)
+        BinaryTreeNode? current = _root;
+        while (current is not null)
         {
-            if (node.Left == null) node.SetLeft(new BinaryTreeNode(key));
-            else InsertRecursive(node.Left, key);
+            if (current.Key == key)
+                return true;
+
+            current = key < current.Key ? current.Left : current.Right;
         }
-        else if (key > node.Key)
+
+        return false;
+    }
+
+    public IReadOnlyList<TreeOperationStep> Insert(int key)
+    {
+        var steps = new List<TreeOperationStep>
         {
-            if (node.Right == null) node.SetRight(new BinaryTreeNode(key));
-            else InsertRecursive(node.Right, key);
+            new($"Начинаем вставку ключа {key}.", CreateSnapshot())
+        };
+
+        if (_root is null)
+        {
+            _root = new BinaryTreeNode(key);
+            steps.Add(new($"Дерево пустое. Ключ {key} становится корнем.", CreateSnapshot(_root.Id, NodeVisualState.Inserted)));
+            return steps;
+        }
+
+        BinaryTreeNode current = _root;
+        while (true)
+        {
+            steps.Add(new($"Сравниваем {key} с узлом {current.Key}.", CreateSnapshot(current.Id, NodeVisualState.Compared)));
+
+            if (key == current.Key)
+            {
+                steps.Add(new($"Ключ {key} уже есть в дереве. Повторная вставка не выполняется.", CreateSnapshot(current.Id, NodeVisualState.Error)));
+                return steps;
+            }
+
+            if (key < current.Key)
+            {
+                steps.Add(new($"{key} меньше {current.Key}. Переходим в левое поддерево.", CreateSnapshot(current.Id, NodeVisualState.Current)));
+                if (current.Left is null)
+                {
+                    current.Left = new BinaryTreeNode(key);
+                    steps.Add(new($"Свободное место найдено. Вставляем {key} слева от {current.Key}.", CreateSnapshot(current.Left.Id, NodeVisualState.Inserted)));
+                    return steps;
+                }
+
+                current = current.Left;
+            }
+            else
+            {
+                steps.Add(new($"{key} больше {current.Key}. Переходим в правое поддерево.", CreateSnapshot(current.Id, NodeVisualState.Current)));
+                if (current.Right is null)
+                {
+                    current.Right = new BinaryTreeNode(key);
+                    steps.Add(new($"Свободное место найдено. Вставляем {key} справа от {current.Key}.", CreateSnapshot(current.Right.Id, NodeVisualState.Inserted)));
+                    return steps;
+                }
+
+                current = current.Right;
+            }
         }
     }
 
-    public override void Delete(int key)
+    public IReadOnlyList<TreeOperationStep> Delete(int key)
     {
-        Root = DeleteRecursive((BinaryTreeNode)Root!, key);
-        if (Root != null) Count--;
-    }
+        var steps = new List<TreeOperationStep>
+        {
+            new($"Начинаем удаление ключа {key}.", CreateSnapshot())
+        };
 
-    private BinaryTreeNode? DeleteRecursive(BinaryTreeNode node, int key)
-    {
-        if (node == null) return null;
-        if (key < node.Key) node.SetLeft(DeleteRecursive(node.Left!, key));
-        else if (key > node.Key) node.SetRight(DeleteRecursive(node.Right!, key));
+        BinaryTreeNode? parent = null;
+        BinaryTreeNode? current = _root;
+
+        while (current is not null && current.Key != key)
+        {
+            steps.Add(new($"Проверяем узел {current.Key}.", CreateSnapshot(current.Id, NodeVisualState.Compared)));
+            parent = current;
+            current = key < current.Key ? current.Left : current.Right;
+        }
+
+        if (current is null)
+        {
+            steps.Add(new($"Ключ {key} не найден. Удаление невозможно.", CreateSnapshot()));
+            return steps;
+        }
+
+        steps.Add(new($"Узел {key} найден. Подготавливаем удаление.", CreateSnapshot(current.Id, NodeVisualState.Deleted)));
+
+        if (current.Left is not null && current.Right is not null)
+        {
+            BinaryTreeNode successorParent = current;
+            BinaryTreeNode successor = current.Right;
+            while (successor.Left is not null)
+            {
+                steps.Add(new($"Ищем минимальный узел в правом поддереве. Текущий кандидат: {successor.Key}.", CreateSnapshot(successor.Id, NodeVisualState.Current)));
+                successorParent = successor;
+                successor = successor.Left;
+            }
+
+            steps.Add(new($"Заменяем значение {current.Key} на преемника {successor.Key}.", CreateSnapshot(successor.Id, NodeVisualState.Found)));
+            current.Key = successor.Key;
+            parent = successorParent;
+            current = successor;
+        }
+
+        BinaryTreeNode? child = current.Left ?? current.Right;
+
+        if (parent is null)
+        {
+            _root = child;
+        }
+        else if (parent.Left == current)
+        {
+            parent.Left = child;
+        }
         else
         {
-            if (node.Left == null) return node.Right as BinaryTreeNode;
-            if (node.Right == null) return node.Left as BinaryTreeNode;
-            node.Key = GetMin(node.Right!);
-            node.SetRight(DeleteRecursive(node.Right!, node.Key));
+            parent.Right = child;
         }
-        return node;
+
+        steps.Add(new($"Ключ {key} удален. Дерево перестроено.", CreateSnapshot()));
+        return steps;
     }
 
-    private int GetMin(BinaryTreeNode n) => n.Left == null ? n.Key : GetMin(n.Left);
-
-    public override ITreeNode? Find(int key) => FindRecursive((BinaryTreeNode)Root!, key);
-    private BinaryTreeNode? FindRecursive(BinaryTreeNode n, int k) =>
-        n == null || n.Key == k ? n : (k < n.Key ? FindRecursive(n.Left!, k) : FindRecursive(n.Right!, k));
-
-    public override IEnumerable<int> Traverse(TraversalType type)
+    public IReadOnlyList<TreeOperationStep> Search(int key)
     {
-        var list = new List<int>();
-        TraverseRecursive(Root, type, list);
-        return list;
-    }
-
-    private void TraverseRecursive(ITreeNode? node, TraversalType type, List<int> list)
-    {
-        if (node == null) return;
-        var bn = (BinaryTreeNode)node;
-        switch (type)
+        var steps = new List<TreeOperationStep>
         {
-            case TraversalType.PreOrder:
-                list.Add(node.Key); TraverseRecursive(bn.Left, type, list); TraverseRecursive(bn.Right, type, list); break;
-            case TraversalType.InOrder:
-                TraverseRecursive(bn.Left, type, list); list.Add(node.Key); TraverseRecursive(bn.Right, type, list); break;
-            case TraversalType.PostOrder:
-                TraverseRecursive(bn.Left, type, list); TraverseRecursive(bn.Right, type, list); list.Add(node.Key); break;
+            new($"Начинаем поиск ключа {key}.", CreateSnapshot())
+        };
+
+        BinaryTreeNode? current = _root;
+        while (current is not null)
+        {
+            steps.Add(new($"Сравниваем {key} с узлом {current.Key}.", CreateSnapshot(current.Id, NodeVisualState.Compared)));
+
+            if (current.Key == key)
+            {
+                steps.Add(new($"Ключ {key} найден.", CreateSnapshot(current.Id, NodeVisualState.Found)));
+                return steps;
+            }
+
+            current = key < current.Key ? current.Left : current.Right;
         }
+
+        steps.Add(new($"Ключ {key} не найден.", CreateSnapshot()));
+        return steps;
+    }
+
+    public TreeSnapshot CreateSnapshot()
+    {
+        return CreateSnapshot(null, NodeVisualState.Normal);
+    }
+
+    private TreeSnapshot CreateSnapshot(string? highlightedNodeId, NodeVisualState highlightedState)
+    {
+        var states = new Dictionary<string, NodeVisualState>();
+        if (!string.IsNullOrWhiteSpace(highlightedNodeId))
+            states[highlightedNodeId] = highlightedState;
+
+        return BuildSnapshot(states);
+    }
+
+    private TreeSnapshot BuildSnapshot(IReadOnlyDictionary<string, NodeVisualState> states)
+    {
+        if (_root is null)
+            return TreeSnapshot.Empty;
+
+        var nodes = new List<VisualNode>();
+        var edges = new List<VisualEdge>();
+        var positions = new Dictionary<string, (double X, double Y)>();
+        int index = 0;
+
+        void Assign(BinaryTreeNode? node, int depth)
+        {
+            if (node is null)
+                return;
+
+            Assign(node.Left, depth + 1);
+            positions[node.Id] = (70 + index * HorizontalStep, 60 + depth * VerticalStep);
+            index++;
+            Assign(node.Right, depth + 1);
+        }
+
+        void Collect(BinaryTreeNode? node)
+        {
+            if (node is null)
+                return;
+
+            var position = positions[node.Id];
+            NodeVisualState state = states.TryGetValue(node.Id, out NodeVisualState storedState)
+                ? storedState
+                : NodeVisualState.Normal;
+
+            nodes.Add(new VisualNode(node.Id, new[] { node.Key }, position.X, position.Y, NodeRadius * 2, NodeRadius * 2, state));
+
+            if (node.Left is not null)
+            {
+                edges.Add(new VisualEdge(node.Id, node.Left.Id));
+                Collect(node.Left);
+            }
+
+            if (node.Right is not null)
+            {
+                edges.Add(new VisualEdge(node.Id, node.Right.Id));
+                Collect(node.Right);
+            }
+        }
+
+        Assign(_root, 0);
+        Collect(_root);
+        return new TreeSnapshot(nodes, edges);
     }
 }

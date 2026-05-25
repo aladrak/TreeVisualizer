@@ -1,21 +1,25 @@
-﻿namespace TreeVisualizer.Domain.Nodes;
+using TreeVisualizer.Domain.Interfaces;
 
-public class BinaryTreeNode : TreeNodeBase
+namespace TreeVisualizer.Domain.Nodes;
+
+/// <summary>
+/// Узел простого бинарного дерева поиска.
+/// </summary>
+public sealed class BinaryTreeNode : ITreeNode
 {
-    public BinaryTreeNode(int key) : base(key) { }
-
-    public BinaryTreeNode? Left => Children.ElementAtOrDefault(0) as BinaryTreeNode;
-    public BinaryTreeNode? Right => Children.ElementAtOrDefault(1) as BinaryTreeNode;
-
-    public void SetLeft(BinaryTreeNode? node)
+    public BinaryTreeNode(int key)
     {
-        if (Left != null) RemoveChild(Left);
-        if (node != null) AddChild(node);
+        Key = key;
+        Id = Guid.NewGuid().ToString("N");
     }
 
-    public void SetRight(BinaryTreeNode? node)
-    {
-        if (Right != null) RemoveChild(Right);
-        if (node != null) AddChild(node);
-    }
+    public string Id { get; }
+
+    public int Key { get; set; }
+
+    public bool IsLeaf => Left is null && Right is null;
+
+    public BinaryTreeNode? Left { get; set; }
+
+    public BinaryTreeNode? Right { get; set; }
 }

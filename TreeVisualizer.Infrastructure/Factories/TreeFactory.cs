@@ -1,13 +1,22 @@
-﻿using TreeVisualizer.Domain.Interfaces;
+using TreeVisualizer.Domain.Enums;
+using TreeVisualizer.Domain.Interfaces;
 using TreeVisualizer.Domain.Trees;
 
 namespace TreeVisualizer.Infrastructure.Factories;
 
-public class TreeFactory
+/// <summary>
+/// Создает дерево выбранного типа.
+/// </summary>
+public static class TreeFactory
 {
-    public ITree CreateTree(string type) => type.ToUpperInvariant() switch
+    public static ITree Create(TreeType treeType)
     {
-        "BST" or "BINARYSEARCHTREE" => new BinarySearchTree(),
-        _ => throw new ArgumentException($"Неподдерживаемый тип дерева: {type}")
-    };
+        return treeType switch
+        {
+            TreeType.BinarySearchTree => new BinarySearchTree(),
+            TreeType.AvlTree => new AvlTree(),
+            TreeType.BTree => new BTree(2),
+            _ => throw new NotSupportedException($"Тип дерева {treeType} не поддерживается.")
+        };
+    }
 }
