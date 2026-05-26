@@ -6,5 +6,5 @@ public sealed class TreeSnapshot(IReadOnlyList<VisualNode> nodes, IReadOnlyList<
 
     public IReadOnlyList<VisualEdge> Edges { get; } = edges;
 
-    public static TreeSnapshot Empty { get; } = new(Array.Empty<VisualNode>(), Array.Empty<VisualEdge>());
+    public static TreeSnapshot Empty { get; } = new([], []);
 }

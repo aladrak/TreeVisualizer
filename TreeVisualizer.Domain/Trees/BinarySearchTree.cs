@@ -218,11 +218,9 @@ public sealed class BinarySearchTree : ITree
                 return;
 
             var position = positions[node.Id];
-            NodeVisualState state = states.TryGetValue(node.Id, out NodeVisualState storedState)
-                ? storedState
-                : NodeVisualState.Normal;
+            NodeVisualState state = states.GetValueOrDefault(node.Id, NodeVisualState.Normal);
 
-            nodes.Add(new VisualNode(node.Id, new[] { node.Key }, position.X, position.Y, NodeRadius * 2, NodeRadius * 2, state));
+            nodes.Add(new VisualNode(node.Id, [node.Key], position.X, position.Y, NodeRadius * 2, NodeRadius * 2, state));
 
             if (node.Left is not null)
             {
@@ -230,11 +228,9 @@ public sealed class BinarySearchTree : ITree
                 Collect(node.Left);
             }
 
-            if (node.Right is not null)
-            {
-                edges.Add(new VisualEdge(node.Id, node.Right.Id));
-                Collect(node.Right);
-            }
+            if (node.Right is null) return;
+            edges.Add(new VisualEdge(node.Id, node.Right.Id));
+            Collect(node.Right);
         }
 
         Assign(_root, 0);

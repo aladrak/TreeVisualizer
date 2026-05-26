@@ -98,7 +98,7 @@ public sealed class BTree : ITree
         if (_root.Keys.Count == 0 && _root.IsLeaf)
             _root = new BTreeNode();
 
-        steps.Add(new($"Удаление {key} завершено. Свойства B-дерева сохранены.", CreateSnapshot()));
+        steps.Add(new TreeOperationStep($"Удаление {key} завершено. Свойства B-дерева сохранены.", CreateSnapshot()));
         return steps;
     }
 

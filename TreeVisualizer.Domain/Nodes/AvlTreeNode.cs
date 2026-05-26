@@ -2,20 +2,13 @@ using TreeVisualizer.Domain.Interfaces;
 
 namespace TreeVisualizer.Domain.Nodes;
 
-public sealed class AvlTreeNode : ITreeNode
+public sealed class AvlTreeNode(int key) : ITreeNode
 {
-    public AvlTreeNode(int key)
-    {
-        Key = key;
-        Height = 1;
-        Id = Guid.NewGuid().ToString("N");
-    }
+    public string Id { get; } = Guid.NewGuid().ToString("N");
 
-    public string Id { get; }
+    public int Key { get; set; } = key;
 
-    public int Key { get; set; }
-
-    public int Height { get; set; }
+    public int Height { get; set; } = 1;
 
     public int BalanceFactor => (Left?.Height ?? 0) - (Right?.Height ?? 0);
 

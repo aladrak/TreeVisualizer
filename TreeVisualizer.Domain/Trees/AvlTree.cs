@@ -138,37 +138,37 @@ public sealed class AvlTree : ITree
         if (node is null)
             return null;
 
-        steps.Add(new($"Сравниваем удаляемый ключ {key} с узлом {node.Key}.", CreateSnapshot(node.Id, NodeVisualState.Compared)));
+        steps.Add(new TreeOperationStep($"Сравниваем удаляемый ключ {key} с узлом {node.Key}.", CreateSnapshot(node.Id, NodeVisualState.Compared)));
 
         if (key < node.Key)
         {
-            steps.Add(new($"{key} меньше {node.Key}. Идем в левое поддерево.", CreateSnapshot(node.Id, NodeVisualState.Current)));
+            steps.Add(new TreeOperationStep($"{key} меньше {node.Key}. Идем в левое поддерево.", CreateSnapshot(node.Id, NodeVisualState.Current)));
             node.Left = DeleteNode(node.Left, key, steps);
         }
         else if (key > node.Key)
         {
-            steps.Add(new($"{key} больше {node.Key}. Идем в правое поддерево.", CreateSnapshot(node.Id, NodeVisualState.Current)));
+            steps.Add(new TreeOperationStep($"{key} больше {node.Key}. Идем в правое поддерево.", CreateSnapshot(node.Id, NodeVisualState.Current)));
             node.Right = DeleteNode(node.Right, key, steps);
         }
         else
         {
-            steps.Add(new($"Удаляем узел {node.Key}.", CreateSnapshot(node.Id, NodeVisualState.Deleted)));
+            steps.Add(new TreeOperationStep($"Удаляем узел {node.Key}.", CreateSnapshot(node.Id, NodeVisualState.Deleted)));
 
             if (node.Left is null && node.Right is null)
             {
-                steps.Add(new($"Узел {node.Key} является листом. Удаляем его без замены.", CreateSnapshot(node.Id, NodeVisualState.Deleted)));
+                steps.Add(new TreeOperationStep($"Узел {node.Key} является листом. Удаляем его без замены.", CreateSnapshot(node.Id, NodeVisualState.Deleted)));
                 return null;
             }
 
             if (node.Left is null || node.Right is null)
             {
-                AvlTreeNode replacement = node.Left ?? node.Right!;
-                steps.Add(new($"У узла {node.Key} один потомок. Заменяем удаляемый узел потомком {replacement.Key}.", CreateSnapshot(replacement.Id, NodeVisualState.Current)));
+                var replacement = node.Left ?? node.Right!;
+                steps.Add(new TreeOperationStep($"У узла {node.Key} один потомок. Заменяем удаляемый узел потомком {replacement.Key}.", CreateSnapshot(replacement.Id, NodeVisualState.Current)));
                 return replacement;
             }
 
-            AvlTreeNode successor = FindMin(node.Right);
-            steps.Add(new($"У узла {node.Key} два потомка. Берем преемника {successor.Key} из правого поддерева.", CreateSnapshot(successor.Id, NodeVisualState.Found)));
+            var successor = FindMin(node.Right);
+            steps.Add(new TreeOperationStep($"У узла {node.Key} два потомка. Берем преемника {successor.Key} из правого поддерева.", CreateSnapshot(successor.Id, NodeVisualState.Found)));
             node.Key = successor.Key;
             node.Right = DeleteNode(node.Right, successor.Key, steps);
         }
@@ -308,26 +308,24 @@ public sealed class AvlTree : ITree
 
         void Collect(AvlTreeNode? node)
         {
-            if (node is null)
-                return;
-
-            var position = positions[node.Id];
-            NodeVisualState state = states.TryGetValue(node.Id, out NodeVisualState storedState)
-                ? storedState
-                : NodeVisualState.Normal;
-
-            nodes.Add(new VisualNode(node.Id, new[] { node.Key }, position.X, position.Y, NodeRadius * 2, NodeRadius * 2, state));
-
-            if (node.Left is not null)
+            while (true)
             {
-                edges.Add(new VisualEdge(node.Id, node.Left.Id));
-                Collect(node.Left);
-            }
+                if (node is null) return;
 
-            if (node.Right is not null)
-            {
+                var position = positions[node.Id];
+                NodeVisualState state = states.GetValueOrDefault(node.Id, NodeVisualState.Normal);
+
+                nodes.Add(new VisualNode(node.Id, [node.Key], position.X, position.Y, NodeRadius * 2, NodeRadius * 2, state));
+
+                if (node.Left is not null)
+                {
+                    edges.Add(new VisualEdge(node.Id, node.Left.Id));
+                    Collect(node.Left);
+                }
+
+                if (node.Right is null) return;
                 edges.Add(new VisualEdge(node.Id, node.Right.Id));
-                Collect(node.Right);
+                node = node.Right;
             }
         }
 

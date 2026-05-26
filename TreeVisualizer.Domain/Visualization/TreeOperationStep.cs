@@ -1,14 +1,8 @@
 namespace TreeVisualizer.Domain.Visualization;
 
-public sealed class TreeOperationStep
+public sealed class TreeOperationStep(string description, TreeSnapshot snapshot)
 {
-    public TreeOperationStep(string description, TreeSnapshot snapshot)
-    {
-        Description = description;
-        Snapshot = snapshot;
-    }
+    public string Description { get; } = description;
 
-    public string Description { get; }
-
-    public TreeSnapshot Snapshot { get; }
+    public TreeSnapshot Snapshot { get; } = snapshot;
 }

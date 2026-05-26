@@ -2,17 +2,11 @@ using TreeVisualizer.Domain.Interfaces;
 
 namespace TreeVisualizer.Domain.Nodes;
 
-public sealed class BinaryTreeNode : ITreeNode
+public sealed class BinaryTreeNode(int key) : ITreeNode
 {
-    public BinaryTreeNode(int key)
-    {
-        Key = key;
-        Id = Guid.NewGuid().ToString("N");
-    }
+    public string Id { get; } = Guid.NewGuid().ToString("N");
 
-    public string Id { get; }
-
-    public int Key { get; set; }
+    public int Key { get; set; } = key;
 
     public bool IsLeaf => Left is null && Right is null;
 

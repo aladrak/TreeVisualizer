@@ -5,12 +5,7 @@ namespace TreeVisualizer.Domain.Nodes;
 // Узел B-дерева. Один узел может хранить несколько отсортированных ключей.
 public sealed class BTreeNode : ITreeNode
 {
-    public BTreeNode()
-    {
-        Id = Guid.NewGuid().ToString("N");
-    }
-
-    public string Id { get; }
+    public string Id { get; } = Guid.NewGuid().ToString("N");
 
     public List<int> Keys { get; } = new();
 
