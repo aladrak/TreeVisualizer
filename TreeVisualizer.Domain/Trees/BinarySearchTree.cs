@@ -5,9 +5,7 @@ using TreeVisualizer.Domain.Visualization;
 
 namespace TreeVisualizer.Domain.Trees;
 
-/// <summary>
-/// Простое бинарное дерево поиска.
-/// </summary>
+// Простое бинарное дерево поиска.
 public sealed class BinarySearchTree : ITree
 {
     private const double HorizontalStep = 90;

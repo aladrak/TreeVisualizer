@@ -2,9 +2,6 @@ using TreeVisualizer.Domain.Interfaces;
 
 namespace TreeVisualizer.Domain.Nodes;
 
-/// <summary>
-/// Узел простого бинарного дерева поиска.
-/// </summary>
 public sealed class BinaryTreeNode : ITreeNode
 {
     public BinaryTreeNode(int key)

@@ -5,9 +5,7 @@ using TreeVisualizer.Domain.Visualization;
 
 namespace TreeVisualizer.Domain.Trees;
 
-/// <summary>
-/// Сбалансированное дерево поиска на основе AVL-алгоритма.
-/// </summary>
+// Сбалансированное дерево поиска на основе AVL-алгоритма.
 public sealed class AvlTree : ITree
 {
     private const double HorizontalStep = 95;

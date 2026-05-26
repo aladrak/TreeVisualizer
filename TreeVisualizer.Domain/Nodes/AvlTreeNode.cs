@@ -2,9 +2,6 @@ using TreeVisualizer.Domain.Interfaces;
 
 namespace TreeVisualizer.Domain.Nodes;
 
-/// <summary>
-/// Узел AVL-дерева.
-/// </summary>
 public sealed class AvlTreeNode : ITreeNode
 {
     public AvlTreeNode(int key)
