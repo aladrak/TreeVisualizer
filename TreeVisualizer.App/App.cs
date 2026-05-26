@@ -2,7 +2,7 @@ using TreeVisualizer.App.Views;
 
 namespace TreeVisualizer.App;
 
-public sealed class App : Application
+public sealed partial class App : Application
 {
     public App()
     {

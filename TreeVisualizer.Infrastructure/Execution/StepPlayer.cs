@@ -2,9 +2,7 @@ using TreeVisualizer.Domain.Visualization;
 
 namespace TreeVisualizer.Infrastructure.Execution;
 
-/// <summary>
-/// Хранит последовательность шагов и выдает следующий шаг по запросу интерфейса.
-/// </summary>
+// Хранит последовательность шагов и выдает следующий шаг по запросу интерфейса.
 public sealed class StepPlayer
 {
     private IReadOnlyList<TreeOperationStep> _steps = Array.Empty<TreeOperationStep>();

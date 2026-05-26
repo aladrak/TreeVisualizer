@@ -4,9 +4,7 @@ using TreeVisualizer.Domain.Trees;
 
 namespace TreeVisualizer.Infrastructure.Factories;
 
-/// <summary>
-/// Создает дерево выбранного типа.
-/// </summary>
+// Создает дерево выбранного типа.
 public static class TreeFactory
 {
     public static ITree Create(TreeType treeType)

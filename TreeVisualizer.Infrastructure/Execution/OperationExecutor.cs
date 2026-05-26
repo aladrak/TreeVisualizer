@@ -5,9 +5,6 @@ using TreeVisualizer.Infrastructure.Factories;
 
 namespace TreeVisualizer.Infrastructure.Execution;
 
-/// <summary>
-/// Выполняет операции над текущим деревом и возвращает шаги визуализации.
-/// </summary>
 public sealed class OperationExecutor
 {
     public IReadOnlyList<TreeOperationStep> Execute(ITree tree, OperationType operationType, int key)

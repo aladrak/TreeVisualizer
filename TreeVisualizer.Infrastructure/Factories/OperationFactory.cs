@@ -4,9 +4,6 @@ using TreeVisualizer.Domain.Visualization;
 
 namespace TreeVisualizer.Infrastructure.Factories;
 
-/// <summary>
-/// Возвращает делегат операции для выбранного типа действия.
-/// </summary>
 public static class OperationFactory
 {
     public static Func<ITree, int, IReadOnlyList<TreeOperationStep>> Create(OperationType operationType)
