@@ -2,9 +2,6 @@ using TreeVisualizer.Domain.Enums;
 
 namespace TreeVisualizer.App.ViewModels;
 
-/// <summary>
-/// Элемент списка выбора дерева.
-/// </summary>
 public sealed class TreeTypeViewModel
 {
     public TreeTypeViewModel(TreeType type, string title)
