@@ -5,10 +5,8 @@ using TreeVisualizer.Domain.Visualization;
 
 namespace TreeVisualizer.Domain.Trees;
 
-/// <summary>
-/// B-дерево минимальной степени t.
-/// Поддерживает поиск, вставку с разбиением переполненных узлов и полноценное удаление с заимствованием/слиянием.
-/// </summary>
+// B-дерево минимальной степени t.
+// Поддерживает поиск, вставку с разбиением переполненных узлов и полноценное удаление с заимствованием/слиянием.
 public sealed class BTree : ITree
 {
     private const double VerticalStep = 105;

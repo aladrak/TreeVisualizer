@@ -1,19 +1,10 @@
 namespace TreeVisualizer.Domain.Visualization;
 
-/// <summary>
-/// Снимок дерева в конкретный момент выполнения операции.
-/// </summary>
-public sealed class TreeSnapshot
+public sealed class TreeSnapshot(IReadOnlyList<VisualNode> nodes, IReadOnlyList<VisualEdge> edges)
 {
-    public TreeSnapshot(IReadOnlyList<VisualNode> nodes, IReadOnlyList<VisualEdge> edges)
-    {
-        Nodes = nodes;
-        Edges = edges;
-    }
+    public IReadOnlyList<VisualNode> Nodes { get; } = nodes;
 
-    public IReadOnlyList<VisualNode> Nodes { get; }
-
-    public IReadOnlyList<VisualEdge> Edges { get; }
+    public IReadOnlyList<VisualEdge> Edges { get; } = edges;
 
     public static TreeSnapshot Empty { get; } = new(Array.Empty<VisualNode>(), Array.Empty<VisualEdge>());
 }

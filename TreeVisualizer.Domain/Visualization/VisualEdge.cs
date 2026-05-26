@@ -1,17 +1,8 @@
 namespace TreeVisualizer.Domain.Visualization;
 
-/// <summary>
-/// Ребро между двумя визуальными узлами.
-/// </summary>
-public sealed class VisualEdge
+public sealed class VisualEdge(string fromId, string toId)
 {
-    public VisualEdge(string fromId, string toId)
-    {
-        FromId = fromId;
-        ToId = toId;
-    }
+    public string FromId { get; } = fromId;
 
-    public string FromId { get; }
-
-    public string ToId { get; }
+    public string ToId { get; } = toId;
 }

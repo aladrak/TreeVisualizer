@@ -3,9 +3,6 @@ using TreeVisualizer.Domain.Visualization;
 
 namespace TreeVisualizer.Domain.Interfaces;
 
-/// <summary>
-/// Базовый интерфейс дерева, с которым работает визуализатор.
-/// </summary>
 public interface ITree
 {
     string Name { get; }

@@ -2,9 +2,7 @@ using TreeVisualizer.Domain.Interfaces;
 
 namespace TreeVisualizer.Domain.Nodes;
 
-/// <summary>
-/// Узел B-дерева. Один узел может хранить несколько отсортированных ключей.
-/// </summary>
+// Узел B-дерева. Один узел может хранить несколько отсортированных ключей.
 public sealed class BTreeNode : ITreeNode
 {
     public BTreeNode()
