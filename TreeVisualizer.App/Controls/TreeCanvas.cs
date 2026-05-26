@@ -3,7 +3,7 @@ using TreeVisualizer.Domain.Visualization;
 
 namespace TreeVisualizer.App.Controls;
 
-public sealed class TreeCanvas : GraphicsView
+public sealed partial class TreeCanvas : GraphicsView
 {
     private readonly TreeDrawable _drawable = new();
 

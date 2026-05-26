@@ -1,6 +1,6 @@
 namespace TreeVisualizer.App.Controls;
 
-public sealed class TreeToolbar : Grid
+public sealed partial class TreeToolbar : Grid
 {
     public TreeToolbar()
     {

@@ -12,7 +12,7 @@ namespace TreeVisualizer.App.Views;
 public sealed partial class MainPage : ContentPage
 {
     private readonly MainViewModel _viewModel = new();
-    private readonly OperationExecutor _operationExecutor = new();
+    // private readonly OperationExecutor _operationExecutor = new();
     private readonly StepPlayer _stepPlayer = new();
     private readonly AnimationService _animationService = new();
     private readonly DialogService _dialogService = new();
@@ -51,9 +51,9 @@ public sealed partial class MainPage : ContentPage
             RowSpacing = 0
         };
 
-        View topPanel = BuildTopPanel();
-        View centerPanel = BuildCenterPanel();
-        View bottomPanel = BuildBottomPanel();
+        var topPanel = BuildTopPanel();
+        var centerPanel = BuildCenterPanel();
+        var bottomPanel = BuildBottomPanel();
 
         root.Add(topPanel, 0, 0);
         root.Add(centerPanel, 0, 1);
@@ -102,7 +102,7 @@ public sealed partial class MainPage : ContentPage
 
         panel.Add(titleLabel, 0, 0);
         panel.Add(_treePicker, 1, 0);
-        panel.Add(header, 2, 0);
+        panel.Add(header, 2);
 
         return panel;
     }
@@ -248,13 +248,13 @@ public sealed partial class MainPage : ContentPage
     {
         if (!int.TryParse(_valueEntry.Text, out int key))
         {
-            await _dialogService.ShowErrorAsync(this, "Введите целое число.");
+            await DialogService.ShowErrorAsync(this, "Введите целое число.");
             return;
         }
 
         StopAutoPlay();
 
-        IReadOnlyList<TreeOperationStep> steps = _operationExecutor.Execute(_viewModel.CurrentTree, operationType, key);
+        IReadOnlyList<TreeOperationStep> steps = OperationExecutor.Execute(_viewModel.CurrentTree, operationType, key);
         _stepPlayer.Load(steps);
 
         TreeOperationStep? firstStep = _stepPlayer.First();
@@ -287,7 +287,7 @@ public sealed partial class MainPage : ContentPage
             return;
         }
 
-        _timer ??= _animationService.CreateTimer(Dispatcher, TimeSpan.FromMilliseconds(850), ShowNextStep);
+        _timer ??= AnimationService.CreateTimer(Dispatcher, TimeSpan.FromMilliseconds(850), ShowNextStep);
         _isAutoPlaying = true;
         _autoButton.Text = "Стоп";
         _timer.Start();

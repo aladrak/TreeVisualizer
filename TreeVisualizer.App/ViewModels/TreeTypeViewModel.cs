@@ -2,17 +2,11 @@ using TreeVisualizer.Domain.Enums;
 
 namespace TreeVisualizer.App.ViewModels;
 
-public sealed class TreeTypeViewModel
+public sealed class TreeTypeViewModel(TreeType type, string title)
 {
-    public TreeTypeViewModel(TreeType type, string title)
-    {
-        Type = type;
-        Title = title;
-    }
+    public TreeType Type { get; } = type;
 
-    public TreeType Type { get; }
-
-    public string Title { get; }
+    public string Title { get; } = title;
 
     public override string ToString()
     {

@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using TreeVisualizer.Domain;
 using System.Runtime.CompilerServices;
 using TreeVisualizer.Domain.Enums;
 using TreeVisualizer.Domain.Interfaces;
@@ -9,9 +8,6 @@ namespace TreeVisualizer.App.ViewModels;
 
 public sealed class MainViewModel : INotifyPropertyChanged
 {
-    private ITree _currentTree;
-    private string _status = "Выбран тип дерева: простое бинарное дерево.";
-
     public MainViewModel()
     {
         TreeTypes = new List<TreeTypeViewModel>
@@ -22,7 +18,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         };
 
         SelectedTreeType = TreeTypes[0];
-        _currentTree = TreeFactory.Create(SelectedTreeType.Type);
+        CurrentTree = TreeFactory.Create(SelectedTreeType.Type);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -31,25 +27,25 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     public TreeTypeViewModel SelectedTreeType { get; private set; }
 
-    public ITree CurrentTree => _currentTree;
+    public ITree CurrentTree { get; private set; }
 
     public string Status
     {
-        get => _status;
-        set
+        get;
+        private set
         {
-            if (_status == value)
+            if (field == value)
                 return;
 
-            _status = value;
+            field = value;
             OnPropertyChanged();
         }
-    }
+    } = "Выбран тип дерева: простое бинарное дерево.";
 
     public void SelectTree(TreeTypeViewModel treeType)
     {
         SelectedTreeType = treeType;
-        _currentTree = TreeFactory.Create(treeType.Type);
+        CurrentTree = TreeFactory.Create(treeType.Type);
         Status = $"Выбран тип дерева: {treeType.Title}.";
         OnPropertyChanged(nameof(CurrentTree));
         OnPropertyChanged(nameof(SelectedTreeType));

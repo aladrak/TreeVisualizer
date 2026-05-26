@@ -1,6 +1,6 @@
 namespace TreeVisualizer.App.Controls;
 
-public sealed class OperationPanel : Grid
+public sealed partial class OperationPanel : Grid
 {
     public OperationPanel()
     {

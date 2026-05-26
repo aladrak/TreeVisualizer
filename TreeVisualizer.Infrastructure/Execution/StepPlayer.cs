@@ -6,9 +6,8 @@ namespace TreeVisualizer.Infrastructure.Execution;
 public sealed class StepPlayer
 {
     private IReadOnlyList<TreeOperationStep> _steps = Array.Empty<TreeOperationStep>();
-    private int _index = -1;
 
-    public int CurrentIndex => _index;
+    public int CurrentIndex { get; private set; } = -1;
 
     public int Count => _steps.Count;
 
@@ -17,7 +16,7 @@ public sealed class StepPlayer
     public void Load(IReadOnlyList<TreeOperationStep> steps)
     {
         _steps = steps;
-        _index = -1;
+        CurrentIndex = -1;
     }
 
     public TreeOperationStep? First()
@@ -25,8 +24,8 @@ public sealed class StepPlayer
         if (_steps.Count == 0)
             return null;
 
-        _index = 0;
-        return _steps[_index];
+        CurrentIndex = 0;
+        return _steps[CurrentIndex];
     }
 
     public TreeOperationStep? Next()
@@ -34,14 +33,14 @@ public sealed class StepPlayer
         if (_steps.Count == 0)
             return null;
 
-        if (_index < _steps.Count - 1)
-            _index++;
+        if (CurrentIndex < _steps.Count - 1)
+            CurrentIndex++;
 
-        return _steps[_index];
+        return _steps[CurrentIndex];
     }
 
     public void Reset()
     {
-        _index = -1;
+        CurrentIndex = -1;
     }
 }

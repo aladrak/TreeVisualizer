@@ -7,9 +7,9 @@ namespace TreeVisualizer.Infrastructure.Execution;
 
 public sealed class OperationExecutor
 {
-    public IReadOnlyList<TreeOperationStep> Execute(ITree tree, OperationType operationType, int key)
+    public static IReadOnlyList<TreeOperationStep> Execute(ITree tree, OperationType operationType, int key)
     {
-        Func<ITree, int, IReadOnlyList<TreeOperationStep>> operation = OperationFactory.Create(operationType);
+        var operation = OperationFactory.Create(operationType);
         return operation(tree, key);
     }
 }
